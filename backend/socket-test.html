@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Socket Test</title>
+</head>
+<body>
+  <h1>Socket.io Test</h1>
+  <div id="status">Connecting...</div>
+
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+<script>
+  // Paste a real JWT token here (from logging in via Postman)
+  const myToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNmUwZmRjYzZlYzZiYTAzYWZiYTZjMiIsInJvbGUiOiJuZ28iLCJpYXQiOjE3ODU4MjA3OTcsImV4cCI6MTc4NjQyNTU5N30.JyagnpJPSaUNpHs9DqMajnOV8NpuIta1pU9lbq11kZY';
+
+  const socket = io('http://localhost:5000', {
+    auth: { token: myToken },
+  });
+
+  socket.on('connect', () => {
+    document.getElementById('status').innerText = 'Connected! Socket ID: ' + socket.id;
+  });
+
+  socket.on('connect_error', (err) => {
+    document.getElementById('status').innerText = 'Connection failed: ' + err.message;
+  });
+
+  socket.on('disconnect', () => {
+    document.getElementById('status').innerText = 'Disconnected';
+  });
+
+  socket.on('new-donation', (data) => {
+  document.getElementById('status').innerText = 'NEW DONATION: ' + data.message;
+  console.log('New donation event:', data);
+});
+
+socket.on('new-assignment', (data) => {
+  document.getElementById('status').innerText = 'ASSIGNED: ' + data.message;
+});
+
+socket.on('donation-delivered', (data) => {
+  document.getElementById('status').innerText = 'DELIVERED: ' + data.message;
+});
+</script>
+</body>
+</html>
