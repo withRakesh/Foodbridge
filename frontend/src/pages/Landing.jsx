@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import {UtensilsCrossed, HeartHandshake, HandHeart,} from 'lucide-react';
 
 const CHAIN = [
   { label: 'Posted', who: 'Restaurant' },
@@ -9,16 +10,21 @@ const CHAIN = [
   { label: 'Completed', who: 'NGO confirms' },
 ];
 
+ 
+
 const ROLES = [
   {
+    icon: UtensilsCrossed,
     title: 'Restaurants',
     body: 'Post surplus food in seconds — name, quantity, and how long it stays good. Confirm handover the moment a volunteer arrives.',
   },
   {
+    icon: HeartHandshake,
     title: 'NGOs',
     body: 'See new donations the instant they post. Accept, pick a beneficiary institution, and assign a volunteer — all before the food cools.',
   },
   {
+    icon: HandHeart,
     title: 'Volunteers',
     body: 'Get notified the moment you\u2019re assigned. One tap to mark a pickup collected, one tap to mark it delivered.',
   },
@@ -95,6 +101,7 @@ export default function Landing() {
           <div className="mt-10 grid gap-8 md:grid-cols-3">
             {ROLES.map((role) => (
               <div key={role.title} className="rounded-2xl border border-neutral-200 bg-cream p-6">
+                <role.icon className="w-8 h-8 text-emerald-600 "   />
                 <h3 className="font-display text-lg font-700 text-neutral-900">{role.title}</h3>
                 <p className="mt-2 text-sm leading-relaxed text-neutral-600">{role.body}</p>
               </div>

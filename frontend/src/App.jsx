@@ -1,5 +1,6 @@
 import { Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
+import Footer from './components/Footer';
 import PrivateRoute from './components/PrivateRoute';
 import RoleRoute from './components/RoleRoute';
 import Landing from './pages/Landing';
@@ -34,31 +35,34 @@ function Unauthorized() {
 
 export default function App() {
   return (
-    <>
+    <div className="flex min-h-screen flex-col">
       <Navbar />
-      <Routes>
-        <Route path="/" element={<Landing />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/unauthorized" element={<Unauthorized />} />
+      <main className="flex-1">
+        <Routes>
+          <Route path="/" element={<Landing />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/unauthorized" element={<Unauthorized />} />
 
-        <Route element={<PrivateRoute />}>
-          <Route element={<RoleRoute allowed={['restaurant']} />}>
-            <Route path="/restaurant" element={<RestaurantDashboard />} />
+          <Route element={<PrivateRoute />}>
+            <Route element={<RoleRoute allowed={['restaurant']} />}>
+              <Route path="/restaurant" element={<RestaurantDashboard />} />
+            </Route>
+            <Route element={<RoleRoute allowed={['ngo']} />}>
+              <Route path="/ngo" element={<NgoDashboard />} />
+            </Route>
+            <Route element={<RoleRoute allowed={['volunteer']} />}>
+              <Route path="/volunteer" element={<VolunteerDashboard />} />
+            </Route>
+            <Route element={<RoleRoute allowed={['admin']} />}>
+              <Route path="/admin" element={<AdminDashboard />} />
+            </Route>
           </Route>
-          <Route element={<RoleRoute allowed={['ngo']} />}>
-            <Route path="/ngo" element={<NgoDashboard />} />
-          </Route>
-          <Route element={<RoleRoute allowed={['volunteer']} />}>
-            <Route path="/volunteer" element={<VolunteerDashboard />} />
-          </Route>
-          <Route element={<RoleRoute allowed={['admin']} />}>
-            <Route path="/admin" element={<AdminDashboard />} />
-          </Route>
-        </Route>
 
-        <Route path="*" element={<ComingSoon title="Page not found" />} />
-      </Routes>
-    </>
+          <Route path="*" element={<ComingSoon title="Page not found" />} />
+        </Routes>
+      </main>
+      <Footer />
+    </div>
   );
 }

@@ -21,8 +21,12 @@ export default function Navbar() {
   return (
     <header className="border-b border-neutral-200 bg-cream/90 backdrop-blur">
       <nav className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-y-2 px-4 py-4 sm:px-6">
-        <Link to="/" className="font-display text-xl font-700 text-accent">
-          FoodBridge
+         <Link to="/" className="font-display text-xl font-700 text-accent">
+          <img
+            src="https://res.cloudinary.com/izq5hlmv/image/upload/v1787367222/foodbridge-logo-horizontal.png"
+            className="h-7 w-auto sm:h-9"
+            alt="FoodBridge"
+          />
         </Link>
 
         {isAuthenticated ? (
