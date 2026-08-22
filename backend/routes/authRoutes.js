@@ -3,10 +3,9 @@ const router = express.Router();
 const { registerUser, loginUser} = require('../controllers/authController');
 const { protect, authorize} = require('../middleware/authMiddleware');
 const { registerValidationRules, loginValidationRules, validate } = require('../validations/authValidation');
-const { authLimiter } = require('../middleware/rateLimiter');
- 
-router.post('/register', authLimiter, registerValidationRules, validate, registerUser);
-router.post('/login', authLimiter, loginValidationRules, validate, loginUser);
+
+router.post('/register', registerValidationRules, validate, registerUser);
+router.post('/login', loginValidationRules, validate, loginUser);
 
 // Temporary test route — will remove later
 router.get('/me', protect, (req, res) => {
