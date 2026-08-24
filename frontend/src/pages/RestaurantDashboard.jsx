@@ -130,7 +130,7 @@ function PostDonationForm({ onPosted }) {
         </div>
       </div>
 
-      <div className="grid gap-5 sm:grid-cols-2">
+      <div className="grid gap-5 sm:grid-cols-2 ">
         <DateTimePicker
           label="Prepared at"
           value={form.preparedTime}
