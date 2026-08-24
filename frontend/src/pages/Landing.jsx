@@ -101,7 +101,7 @@ export default function Landing() {
           <div className="mt-10 grid gap-8 md:grid-cols-3">
             {ROLES.map((role) => (
               <div key={role.title} className="rounded-2xl border border-neutral-200 bg-cream p-6">
-                <role.icon className="w-8 h-8 text-emerald-600 "   />
+                <role.icon className="w-8 h-8 text-primary "   />
                 <h3 className="font-display text-lg font-700 text-neutral-900">{role.title}</h3>
                 <p className="mt-2 text-sm leading-relaxed text-neutral-600">{role.body}</p>
               </div>

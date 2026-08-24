@@ -7,11 +7,11 @@
 */
 @theme {
   /* Palette */
-  --color-primary: #ff6a3b;
+  --color-primary: #E63946;
   --color-primary-dark: #e2531f;
-  --color-accent: #07472c;
+  --color-accent: #1D1D1D;
   --color-accent-light: #0e6b42;
-  --color-cream: #f7f4ed;
+  --color-cream: #FFF8F8;
   --color-neutral-900: #1c1917;
   --color-neutral-600: #57534e;
   --color-neutral-200: #e7e2d8;
