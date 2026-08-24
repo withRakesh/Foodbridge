@@ -80,7 +80,7 @@ export default function Landing() {
                       aria-hidden="true"
                     />
                   )}
-                  <span className="relative z-10 mt-0.5 flex h-6 w-6 flex-none items-center justify-center rounded-full bg-accent text-[11px] font-700 text-white">
+                  <span className="relative z-10 mt-0.5 flex h-6 w-6 flex-none items-center justify-center rounded-full bg-cream  border  border-primary-400  text-[11px] font-700 text-primary">
                     {i + 1}
                   </span>
                   <div>

@@ -36,26 +36,40 @@ export default function Navbar() {
             />
           </Link>
 
-          {/* Desktop nav — hidden on mobile */}
           {isAuthenticated ? (
-            <div className="hidden items-center gap-4 md:flex">
-              <Link
+            <div className="flex items-center gap-3 sm:gap-4">
+              {/* Dashboard link + Logout — desktop only, folded into the mobile dropdown instead */}
+              {/* <Link
                 to={DASHBOARD_PATH[user.role] ?? '/'}
-                className="text-sm font-medium text-neutral-900 hover:text-primary"
+                className="hidden text-sm font-medium text-neutral-900 hover:text-primary md:block"
               >
                 Dashboard
-              </Link>
+              </Link> */}
+
+              {/* Username + notification bell — always visible, mobile included */}
+              <span className="max-w-[90px] truncate text-sm text-neutral-600 sm:max-w-none">
+                {user.name}
+              </span>
               <NotificationToggle />
-              <span className="text-sm text-neutral-600">{user.name}</span>
+
               <button
                 onClick={handleLogout}
-                className="rounded-full border border-accent px-4 py-1.5 text-sm font-medium text-accent transition hover:bg-accent hover:text-white"
+                className="hidden rounded-full border border-accent px-4 py-1.5 text-sm font-medium text-accent transition hover:bg-accent hover:text-white md:block"
               >
                 Log out
               </button>
+
+              {/* Hamburger — mobile only, opens Dashboard + Logout */}
+              <button
+                onClick={() => setMenuOpen((open) => !open)}
+                className="text-neutral-900 md:hidden"
+                aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+              >
+                {menuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              </button>
             </div>
           ) : (
-            <div className="hidden items-center gap-3 md:flex">
+            <div className="flex items-center gap-3">
               <Link to="/login" className="text-sm font-medium text-neutral-900 hover:text-primary">
                 Log in
               </Link>
@@ -67,54 +81,24 @@ export default function Navbar() {
               </Link>
             </div>
           )}
-
-          {/* Hamburger — mobile only */}
-          <button
-            onClick={() => setMenuOpen((open) => !open)}
-            className="text-neutral-900 md:hidden"
-            aria-label={menuOpen ? 'Close menu' : 'Open menu'}
-          >
-            {menuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-          </button>
         </div>
 
-        {/* Mobile dropdown panel */}
-        {menuOpen && (
+        {/* Mobile dropdown — Dashboard + Logout only (username/notify already up top) */}
+        {isAuthenticated && menuOpen && (
           <div className="mt-4 flex flex-col gap-3 border-t border-neutral-200 pt-4 md:hidden">
-            {isAuthenticated ? (
-              <>
-                <Link
-                  to={DASHBOARD_PATH[user.role] ?? '/'}
-                  onClick={closeMenu}
-                  className="text-sm font-medium text-neutral-900"
-                >
-                  Dashboard
-                </Link>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-neutral-600">{user.name}</span>
-                  <NotificationToggle />
-                </div>
-                <button
-                  onClick={handleLogout}
-                  className="rounded-full border border-accent px-4 py-1.5 text-sm font-medium text-accent transition hover:bg-accent hover:text-white"
-                >
-                  Log out
-                </button>
-              </>
-            ) : (
-              <>
-                <Link to="/login" onClick={closeMenu} className="text-sm font-medium text-neutral-900">
-                  Log in
-                </Link>
-                <Link
-                  to="/register"
-                  onClick={closeMenu}
-                  className="rounded-full bg-primary px-4 py-1.5 text-center text-sm font-medium text-white transition hover:bg-primary-dark"
-                >
-                  Get started
-                </Link>
-              </>
-            )}
+            {/* <Link
+              to={DASHBOARD_PATH[user.role] ?? '/'}
+              onClick={closeMenu}
+              className="text-sm font-medium text-neutral-900"
+            >
+              Dashboard
+            </Link> */}
+            <button
+              onClick={handleLogout}
+              className="rounded-full border border-accent px-4 py-1.5 text-sm font-medium text-accent transition hover:bg-accent hover:text-white"
+            >
+              Log out
+            </button>
           </div>
         )}
       </nav>
