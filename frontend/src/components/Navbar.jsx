@@ -24,7 +24,7 @@ export default function Navbar() {
          <Link to="/" className="font-display text-xl font-700 text-accent">
           <img
             src="https://res.cloudinary.com/izq5hlmv/image/upload/v1787551106/foodbridge-logo-red-horizontal.png"
-            className="h-8 w-auto sm:h-9"
+            className="h-7 w-auto sm:h-8"
             alt="FoodBridge"
           />
         </Link>
