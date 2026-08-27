@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { MapPin, Clock, UtensilsCrossed, Package, ClipboardList, Building2, Bike } from 'lucide-react';
 import StatusBadge from '../components/StatusBadge';
 import InstitutionPicker from '../components/InstitutionPicker';
 import { SkeletonList } from '../components/Skeleton';
@@ -19,6 +20,17 @@ function formatExpiry(iso) {
   if (!iso) return null;
   const d = new Date(iso);
   return d.toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
+}
+
+// Returns a color class based on how soon the donation expires — this is
+// the app's core value prop ("before it's too late"), so the UI should
+// actually signal urgency instead of showing a flat neutral timestamp.
+function getUrgencyStyle(expiryTime) {
+  if (!expiryTime) return { text: 'text-neutral-600', dot: 'bg-neutral-400' };
+  const hoursLeft = (new Date(expiryTime) - new Date()) / (1000 * 60 * 60);
+  if (hoursLeft <= 2) return { text: 'text-status-expired font-medium', dot: 'bg-status-expired' };
+  if (hoursLeft <= 6) return { text: 'text-status-collected font-medium', dot: 'bg-status-collected' };
+  return { text: 'text-neutral-600', dot: 'bg-accent-light' };
 }
 
 function AvailableDonationCard({ donation, institutions, onInstitutionsChanged, onAccepted }) {
@@ -43,32 +55,50 @@ function AvailableDonationCard({ donation, institutions, onInstitutionsChanged, 
     }
   };
 
+  const urgency = getUrgencyStyle(donation.expiryTime);
+
   return (
-    <li className="rounded-2xl border border-neutral-200 bg-white/60 p-5">
-      <div className="flex items-start justify-between gap-4">
-        <div className="flex gap-4">
-          {donation.imageUrl && (
+    <li className="rounded-2xl border border-neutral-200 bg-white/60 p-4 sm:p-5">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+        <div className="flex gap-3 sm:gap-4">
+          {donation.imageUrl ? (
             <img
               src={donation.imageUrl}
               alt={donation.foodName}
-              className="h-16 w-16 flex-none rounded-xl object-cover"
+              className="h-14 w-14 flex-none rounded-xl object-cover sm:h-16 sm:w-16"
             />
+          ) : (
+            <div className="flex h-14 w-14 flex-none items-center justify-center rounded-xl bg-primary/10 sm:h-16 sm:w-16">
+              <UtensilsCrossed className="h-6 w-6 text-primary" strokeWidth={1.5} />
+            </div>
           )}
-          <div>
-            <p className="font-display font-700 text-neutral-900">{donation.foodName}</p>
+          <div className="min-w-0">
+            <p className="truncate font-display font-700 text-neutral-900">{donation.foodName}</p>
             <p className="text-sm text-neutral-600">
               {donation.quantity} · {donation.restaurant?.name}
             </p>
-            <p className="text-xs text-neutral-600">{donation.location?.address}</p>
-            {donation.expiryTime && (
-              <p className="mt-1 text-xs text-neutral-600">Good until {formatExpiry(donation.expiryTime)}</p>
-            )}
           </div>
         </div>
         <StatusBadge status={donation.status} />
       </div>
 
-      <div className="mt-4 space-y-3">
+      <div className="mt-3 space-y-1.5 border-t border-neutral-200 pt-3">
+        {donation.location?.address && (
+          <p className="flex items-start gap-1.5 text-xs text-neutral-600">
+            <MapPin className="mt-0.5 h-3.5 w-3.5 flex-none" strokeWidth={2} />
+            <span className="min-w-0 truncate">{donation.location.address}</span>
+          </p>
+        )}
+        {donation.expiryTime && (
+          <p className={`flex items-center gap-1.5 text-xs ${urgency.text}`}>
+            <Clock className="h-3.5 w-3.5 flex-none" strokeWidth={2} />
+            Good until {formatExpiry(donation.expiryTime)}
+            <span className={`h-1.5 w-1.5 flex-none rounded-full ${urgency.dot}`} />
+          </p>
+        )}
+      </div>
+
+      <div className="mt-4 space-y-3 rounded-xl bg-cream/60 p-3">
         <InstitutionPicker
           institutions={institutions}
           selectedId={selectedInstitutionId}
@@ -84,13 +114,22 @@ function AvailableDonationCard({ donation, institutions, onInstitutionsChanged, 
         <button
           onClick={handleAccept}
           disabled={accepting}
-          className="rounded-full bg-primary px-5 py-2 text-sm font-medium text-white transition hover:bg-primary-dark disabled:opacity-60"
+          className="w-full rounded-full bg-primary px-5 py-2.5 text-sm font-medium text-white transition hover:bg-primary-dark disabled:opacity-60 sm:w-auto"
         >
           {accepting ? 'Accepting\u2026' : 'Accept donation'}
         </button>
       </div>
     </li>
   );
+}
+
+// Small "nothing to do yet, here's what's happening" line for statuses
+// that don't have an NGO-side action — keeps the card from looking dead
+// while it's just waiting on someone else's step.
+function waitingMessage(status) {
+  if (status === 'volunteer_assigned') return 'Waiting on the restaurant to hand it over.';
+  if (status === 'collected') return 'On the way — waiting on the volunteer to mark it delivered.';
+  return null;
 }
 
 function MyDonationCard({ donation, volunteers, onAssigned, onDeliveryConfirmed }) {
@@ -129,45 +168,71 @@ function MyDonationCard({ donation, volunteers, onAssigned, onDeliveryConfirmed 
     }
   };
 
+  const waiting = waitingMessage(donation.status);
+
   return (
-    <li className="rounded-2xl border border-neutral-200 bg-white/60 p-5">
-      <div className="flex items-start justify-between gap-4">
-        <div className="flex gap-4">
-          {donation.imageUrl && (
+    <li className="rounded-2xl border border-neutral-200 bg-white/60 p-4 sm:p-5">
+      {/* Header: image + name/quantity, badge below on mobile so long
+          text never fights the badge for horizontal space */}
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+        <div className="flex gap-3 sm:gap-4">
+          {donation.imageUrl ? (
             <img
               src={donation.imageUrl}
               alt={donation.foodName}
-              className="h-16 w-16 flex-none rounded-xl object-cover"
+              className="h-14 w-14 flex-none rounded-xl object-cover sm:h-16 sm:w-16"
             />
+          ) : (
+            <div className="flex h-14 w-14 flex-none items-center justify-center rounded-xl bg-primary/10 sm:h-16 sm:w-16">
+              <UtensilsCrossed className="h-6 w-6 text-primary" strokeWidth={1.5} />
+            </div>
           )}
-          <div>
-            <p className="font-display font-700 text-neutral-900">{donation.foodName}</p>
-            <p className="text-sm text-neutral-600">
-              {donation.quantity} · {donation.restaurant?.name}
-            </p>
-            <p className="mt-1 text-xs text-neutral-600">
-              → {donation.institution?.name ?? 'No institution recorded'}
-            </p>
-            {donation.volunteer?.name && (
-              <p className="text-xs text-neutral-600">Volunteer: {donation.volunteer.name}</p>
-            )}
+          {/* min-w-0 lets long food names truncate instead of forcing the
+              card wider than its container. Name + quantity share a row
+              via flex (not a fixed grid), so a short quantity like "5kg"
+              doesn't leave an odd empty gap next to a long food name. */}
+          <div className="min-w-0">
+            <div className="flex items-baseline justify-between gap-2">
+              <p className="truncate font-display font-700 text-neutral-900">{donation.foodName}</p>
+              <p className="flex-none text-sm text-neutral-600">{donation.quantity}</p>
+            </div>
+            <p className="text-sm text-neutral-600">From {donation.restaurant?.name}</p>
           </div>
         </div>
         <StatusBadge status={donation.status} />
       </div>
 
+      {/* Metadata row — icons make destination/volunteer scannable at a
+          glance, matching AvailableDonationCard's address/expiry row */}
+      <div className="mt-3 space-y-1.5 border-t border-neutral-200 pt-3">
+        <p className="flex items-start gap-1.5 text-xs text-neutral-600">
+          <Building2 className="mt-0.5 h-3.5 w-3.5 flex-none" strokeWidth={2} />
+          <span className="min-w-0 truncate">
+            {donation.institution?.name ?? 'No institution recorded'}
+          </span>
+        </p>
+        {donation.volunteer?.name && (
+          <p className="flex items-center gap-1.5 text-xs text-neutral-600">
+            <Bike className="h-3.5 w-3.5 flex-none" strokeWidth={2} />
+            {donation.volunteer.name}
+          </p>
+        )}
+      </div>
+
+      {waiting && <p className="mt-3 text-xs text-neutral-600">{waiting}</p>}
+
       {donation.status === 'accepted' && (
-        <div className="mt-4 space-y-2">
+        <div className="mt-4 space-y-3 rounded-xl bg-cream/60 p-3">
           {volunteers.length === 0 ? (
             <p className="text-xs text-neutral-600">
               No volunteers are currently available — check back once one is free.
             </p>
           ) : (
-            <div className="flex items-center gap-2">
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
               <select
                 value={selectedVolunteerId}
                 onChange={(e) => setSelectedVolunteerId(e.target.value)}
-                className="flex-1 rounded-lg border border-neutral-200 bg-white px-3 py-2 text-sm outline-none focus:border-primary"
+                className="w-full rounded-lg border border-neutral-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-primary sm:flex-1 sm:py-2"
               >
                 <option value="" disabled>
                   Select volunteer{'\u2026'}
@@ -181,7 +246,7 @@ function MyDonationCard({ donation, volunteers, onAssigned, onDeliveryConfirmed 
               <button
                 onClick={handleAssign}
                 disabled={assigning}
-                className="flex-none rounded-full bg-primary px-4 py-2 text-sm font-medium text-white transition hover:bg-primary-dark disabled:opacity-60"
+                className="w-full flex-none rounded-full bg-primary px-4 py-2.5 text-sm font-medium text-white transition hover:bg-primary-dark disabled:opacity-60 sm:w-auto sm:py-2"
               >
                 {assigning ? 'Assigning\u2026' : 'Assign'}
               </button>
@@ -192,11 +257,11 @@ function MyDonationCard({ donation, volunteers, onAssigned, onDeliveryConfirmed 
       )}
 
       {donation.status === 'delivered' && (
-        <div className="mt-4 space-y-2">
+        <div className="mt-4 space-y-2 rounded-xl bg-cream/60 p-3">
           <button
             onClick={handleConfirmDelivery}
             disabled={confirming}
-            className="rounded-full bg-primary px-5 py-2 text-sm font-medium text-white transition hover:bg-primary-dark disabled:opacity-60"
+            className="w-full rounded-full bg-primary px-5 py-2.5 text-sm font-medium text-white transition hover:bg-primary-dark disabled:opacity-60 sm:w-auto"
           >
             {confirming ? 'Confirming\u2026' : 'Confirm delivery'}
           </button>
@@ -240,11 +305,6 @@ export default function NgoDashboard() {
       .finally(() => setLoading(false));
   }, []);
 
-  // Live updates: a new donation posted anywhere shows up in "Available"
-  // without a refresh, and a volunteer marking something delivered updates
-  // "My donations" the same way. Both events are room-targeted server-side
-  // (role:ngo / this NGO's own room), so every event received here is
-  // already relevant — no filtering needed.
   useEffect(() => {
     if (!socket) return;
 
@@ -268,8 +328,6 @@ export default function NgoDashboard() {
   }, [socket, addToast]);
 
   const handleAccepted = (donationId) => {
-    // Move it out of "available" locally, then refetch "mine" so it shows
-    // up there with the real populated institution/status from the server.
     setAvailable((prev) => prev.filter((d) => d._id !== donationId));
     getMyNgoDonations()
       .then((data) => setMine(data.donations))
@@ -281,10 +339,7 @@ export default function NgoDashboard() {
   };
 
   const handleAssigned = (donationId, volunteerId) => {
-    // The assigned volunteer is no longer available for other donations.
     setVolunteers((prev) => prev.filter((v) => v._id !== volunteerId));
-    // Refetch "mine" so the card picks up status 'volunteer_assigned' and
-    // the populated volunteer name from the server.
     getMyNgoDonations()
       .then((data) => setMine(data.donations))
       .catch(() => {});
@@ -320,14 +375,20 @@ export default function NgoDashboard() {
         </button>
       </div>
 
-      {loading && <div className="mt-6"><SkeletonList count={3} /></div>}
+      {loading && (
+        <div className="mt-6">
+          <SkeletonList count={3} />
+        </div>
+      )}
       {error && <p className="mt-6 text-sm text-status-expired">{error}</p>}
 
-      {!loading && !error && tab === 'available' && (
-        available.length === 0 ? (
+      {!loading &&
+        !error &&
+        tab === 'available' &&
+        (available.length === 0 ? (
           <div className="mt-6">
             <EmptyState
-              icon={'\ud83d\udce6'}
+              icon={Package}
               title="No donations posted right now"
               description="Check back soon — you'll get a live notification the moment one comes in."
             />
@@ -344,14 +405,15 @@ export default function NgoDashboard() {
               />
             ))}
           </ul>
-        )
-      )}
+        ))}
 
-      {!loading && !error && tab === 'mine' && (
-        mine.length === 0 ? (
+      {!loading &&
+        !error &&
+        tab === 'mine' &&
+        (mine.length === 0 ? (
           <div className="mt-6">
             <EmptyState
-              icon={'\ud83d\udccb'}
+              icon={ClipboardList}
               title="Nothing accepted yet"
               description="Switch to the Available tab to accept your first donation."
             />
@@ -368,8 +430,7 @@ export default function NgoDashboard() {
               />
             ))}
           </ul>
-        )
-      )}
+        ))}
     </div>
   );
 }

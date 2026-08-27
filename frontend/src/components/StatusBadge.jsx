@@ -18,10 +18,11 @@ export default function StatusBadge({ status }) {
 
   return (
     <span
-      className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium text-white"
+      className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium text-center text-white"
       style={{ backgroundColor: config.color }}
     >
       {config.label}
     </span>
   );
 }
+  
