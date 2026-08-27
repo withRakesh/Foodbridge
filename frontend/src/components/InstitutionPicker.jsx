@@ -92,17 +92,17 @@ export default function InstitutionPicker({ institutions, selectedId, onSelect, 
   }
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="space-y-1.5">
       <select
         value={selectedId ?? ''}
         onChange={(e) => onSelect(e.target.value)}
-        className="flex-1 rounded-lg border border-neutral-200 bg-white px-3 py-2 text-sm outline-none focus:border-primary"
+        className="w-full rounded-lg border  border-neutral-200 bg-white px-3 py-2 text-sm outline-none focus:border-primary"
       >
-        <option value="" disabled>
-          Select institution{'\u2026'}
+        <option value="" disabled >
+          Select institution…
         </option>
         {institutions.map((inst) => (
-          <option key={inst._id} value={inst._id}>
+          <option key={inst._id} value={inst._id}  className="bg-white rounded border border-primary-200 ">
             {inst.name} — {inst.address}
           </option>
         ))}
@@ -110,9 +110,9 @@ export default function InstitutionPicker({ institutions, selectedId, onSelect, 
       <button
         type="button"
         onClick={() => setAdding(true)}
-        className="flex-none text-xs font-medium text-primary hover:underline"
+        className="text-xs font-medium text-primary hover:underline"
       >
-        + New
+        + New institution
       </button>
     </div>
   );
