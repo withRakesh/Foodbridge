@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Bike } from 'lucide-react';
 import StatusBadge from '../components/StatusBadge';
 import { SkeletonList } from '../components/Skeleton';
 import EmptyState from '../components/EmptyState';
@@ -126,7 +127,7 @@ export default function VolunteerDashboard() {
       {!loading && !error && assignments.length === 0 && (
         <div className="mt-6">
           <EmptyState
-            icon={'\ud83d\udeb2'}
+            icon={Bike}
             title="No assignments yet"
             description="An NGO will assign you once they accept a donation — you'll get a notification the moment it happens."
           />

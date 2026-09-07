@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { CheckCircle2, Users, BarChart3 } from 'lucide-react';
 import StatusBadge from '../components/StatusBadge';
 import { SkeletonList, SkeletonLine } from '../components/Skeleton';
 import EmptyState from '../components/EmptyState';
@@ -118,7 +119,7 @@ function PendingApprovalsTab() {
         <h3 className="font-display font-700 text-neutral-900">Restaurants ({restaurants.length})</h3>
         {restaurants.length === 0 ? (
           <div className="mt-3">
-            <EmptyState icon={'\u2705'} title="Nothing pending" description="No restaurant signups waiting on you." />
+            <EmptyState icon={CheckCircle2} title="Nothing pending" description="No restaurant signups waiting on you." />
           </div>
         ) : (
           <ul className="mt-3 space-y-3">
@@ -132,7 +133,7 @@ function PendingApprovalsTab() {
         <h3 className="font-display font-700 text-neutral-900">NGOs ({ngos.length})</h3>
         {ngos.length === 0 ? (
           <div className="mt-3">
-            <EmptyState icon={'\u2705'} title="Nothing pending" description="No NGO signups waiting on you." />
+            <EmptyState icon={CheckCircle2} title="Nothing pending" description="No NGO signups waiting on you." />
           </div>
         ) : (
           <ul className="mt-3 space-y-3">
@@ -238,7 +239,7 @@ function AllUsersTab() {
 
       {!loading && !error && users.length === 0 && (
         <div className="mt-4">
-          <EmptyState icon={'\ud83d\udc65'} title="No users found" description="Try a different role filter." />
+          <EmptyState icon={Users} title="No users found" description="Try a different role filter." />
         </div>
       )}
 
@@ -361,7 +362,7 @@ function DonationsTab() {
 
       {!loading && !error && donations.length === 0 && (
         <div className="mt-4">
-          <EmptyState icon={'\ud83d\udcca'} title="No donations found" description="Try a different status filter." />
+          <EmptyState icon={BarChart3} title="No donations found" description="Try a different status filter." />
         </div>
       )}
 

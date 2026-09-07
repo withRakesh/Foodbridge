@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { UtensilsCrossed } from 'lucide-react';
 import StatusBadge from '../components/StatusBadge';
 import DateTimePicker from '../components/DateTimePicker';
 import { SkeletonList } from '../components/Skeleton';
@@ -365,7 +366,7 @@ export default function RestaurantDashboard() {
         {!loading && !error && donations.length === 0 && (
           <div className="mt-4">
             <EmptyState
-              icon={'\ud83c\udf7d\ufe0f'}
+              icon={UtensilsCrossed}
               title="Nothing posted yet"
               description="Use the form above to post your first surplus donation."
             />
